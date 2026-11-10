@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TESTX Store{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              950: '#07070c',
+              900: '#0a0a0f',
+              800: '#12121a',
+              700: '#1a1a24',
+              600: '#22222e',
+              500: '#2a2a38'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+    * { font-family: 'Prompt', sans-serif; }
+    body { background: #0a0a0f; }
+    .card-hover { transition: all .2s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(59,130,246,.12); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #12121a; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-dark-900 text-white min-h-screen">
+
+  <!-- Top bar -->
+  <div class="bg-dark-800/60 border-b border-white/5 text-xs text-gray-400 py-1.5">
+    <div class="max-w-6xl mx-auto px-4">
+      บริการจำหน่าย Setting, BoostFPS, Windows คีย์ ซื่อสัตย์ ปลอดภัย 24 ชม.
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-dark-900/90 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-6">
+        <a href="{{ url_for('home') }}" class="flex items-center gap-2 font-bold text-lg">
+          <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-sm shadow-lg shadow-blue-500/30">TX</span>
+          TESTX
+        </a>
+        <div class="hidden md:flex items-center gap-1 text-sm">
+          <a href="{{ url_for('home') }}" class="px-3 py-1.5 rounded-lg hover:bg-white/5">หน้าหลัก</a>
+          <a href="{{ url_for('products') }}" class="px-3 py-1.5 rounded-lg hover:bg-white/5">สินค้า</a>
+          <a href="{{ url_for('topup') }}" class="px-3 py-1.5 rounded-lg hover:bg-white/5">เติมเงิน</a>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        {% if user %}
+        <div class="hidden sm:block text-right">
+          <div class="text-[10px] text-gray-500 uppercase tracking-wider">{{ user.role }}</div>
+          <div class="text-sm font-semibold text-blue-400">{{ "{:,.2f}".format(user.credit) }} ฿</div>
+        </div>
+        <div class="relative group">
+          <button class="w-9 h-9 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center font-bold text-sm">
+            {{ user.username[0]|upper }}
+          </button>
+          <div class="absolute right-0 top-11 w-56 bg-dark-800 border border-white/10 rounded-xl shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="px-4 py-2.5 border-b border-white/10 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center font-bold">{{ user.username[0]|upper }}</div>
+              <div>
+                <div class="font-medium text-sm">{{ user.username }}</div>
+                <div class="text-xs text-gray-400">{{ user.role }}</div>
+              </div>
+            </div>
+            <div class="py-1 text-sm">
+              <div class="px-4 py-1.5 text-xs text-gray-500">เครดิตคงเหลือ</div>
+              <div class="px-4 pb-2 font-semibold text-blue-400">{{ "{:,.2f}".format(user.credit) }} บาท</div>
+              <a href="{{ url_for('orders') }}" class="block px-4 py-2 hover:bg-white/5">ประวัติการสั่งซื้อ</a>
+              <a href="{{ url_for('topup') }}" class="block px-4 py-2 hover:bg-white/5">เติมเครดิต</a>
+              {% if user.role == 'ADMIN' %}
+              <a href="{{ url_for('admin') }}" class="block px-4 py-2 hover:bg-white/5 text-blue-400">ระบบแอดมิน</a>
+              {% endif %}
+              <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-red-500/10 text-red-400">ออกจากระบบ</a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-medium transition">เข้าสู่ระบบ</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] space-y-2 w-full max-w-sm px-4">
+    {% for cat, msg in messages %}
+    <div class="px-4 py-3 rounded-xl text-sm font-medium shadow-lg {% if cat=='success' %}bg-emerald-600{% else %}bg-red-600{% endif %}">
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <main class="max-w-6xl mx-auto px-4 py-6 pb-20">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 bg-dark-800/40 mt-10">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid sm:grid-cols-3 gap-6 text-sm">
+      <div>
+        <div class="font-bold mb-2 flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-xs">TX</span> TESTX
+        </div>
+        <p class="text-gray-400 text-xs leading-relaxed">บริการจำหน่าย Setting, BoostFPS, Windows คีย์ ซื่อสัตย์ ปลอดภัย 24 ชม.</p>
+      </div>
+      <div>
+        <div class="font-medium mb-2 text-gray-300">ร้านค้า</div>
+        <div class="space-y-1 text-xs text-gray-400">
+          <a href="{{ url_for('products') }}" class="block hover:text-white">สินค้าทั้งหมด</a>
+          <a href="{{ url_for('topup') }}" class="block hover:text-white">เติมเงิน</a>
+          <a href="{{ url_for('orders') }}" class="block hover:text-white">ประวัติการสั่งซื้อ</a>
+        </div>
+      </div>
+      <div>
+        <div class="font-medium mb-2 text-gray-300">ช่วยเหลือ</div>
+        <div class="space-y-1 text-xs text-gray-400">
+          <span class="block">คำถามที่พบบ่อย</span>
+          <span class="block">ติดต่อแอดมิน</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="fixed bottom-5 right-5 z-40">
+    <a href="{{ url_for('topup') }}" class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-full text-sm font-medium shadow-lg shadow-blue-500/30">
+      เติมเงิน
+    </a>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.fixed.top-20 > div').forEach(el => el.style.display = 'none');
+    }, 4000);
+  </script>
+</body>
+</html>
