@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}ประวัติการสั่งซื้อ{% endblock %}
+{% block content %}
+<div class="p-4 max-w-4xl mx-auto">
+  <a href="{{ url_for('admin') }}" class="text-blue-400 text-sm">← กลับแดชบอร์ด</a>
+  <h1 class="text-xl font-bold mt-2 mb-4">ประวัติการสั่งซื้อ</h1>
+  {% for o in orders %}
+  <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800 mb-2 text-sm">
+    <div>{{ o.product_name }} - {{ o.price }} ฿</div>
+    <div class="text-gray-400">{{ o.user.username }} • {{ o.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+  </div>
+  {% else %}
+  <p class="text-gray-500">ยังไม่มีออเดอร์</p>
+  {% endfor %}
+</div>
+{% endblock %}

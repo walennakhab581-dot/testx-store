@@ -1,122 +1,75 @@
 {% extends "base.html" %}
 {% block title %}ระบบแอดมิน - TESTX{% endblock %}
-
 {% block content %}
-<div class="mb-8">
-  <h1 class="text-2xl font-bold text-blue-400">ระบบแอดมิน</h1>
-  <p class="text-sm text-gray-400">จัดการสินค้า ออเดอร์ และผู้ใช้</p>
-</div>
+<div class="min-h-screen bg-[#0a0a0a] text-white">
+  <!-- Sidebar style menu for admin -->
+  <div class="flex">
+    <!-- Main content -->
+    <div class="flex-1 p-4 md:p-6">
+      <h1 class="text-2xl font-bold mb-2">ระบบแอดมิน</h1>
+      <p class="text-gray-400 mb-6">จัดการร้านค้าทั้งหมด</p>
 
-<!-- Stats -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-  <div class="bg-dark-800 border border-white/10 rounded-2xl p-4">
-    <div class="text-xs text-gray-400">สินค้า</div>
-    <div class="text-2xl font-bold mt-1">{{ total_products }}</div>
-  </div>
-  <div class="bg-dark-800 border border-white/10 rounded-2xl p-4">
-    <div class="text-xs text-gray-400">ออเดอร์</div>
-    <div class="text-2xl font-bold mt-1">{{ total_orders }}</div>
-  </div>
-  <div class="bg-dark-800 border border-white/10 rounded-2xl p-4">
-    <div class="text-xs text-gray-400">ยอดขายรวม</div>
-    <div class="text-2xl font-bold mt-1 text-green-400">{{ "%.0f"|format(total_sales) }} ฿</div>
-  </div>
-  <div class="bg-dark-800 border border-white/10 rounded-2xl p-4">
-    <div class="text-xs text-gray-400">ผู้ใช้</div>
-    <div class="text-2xl font-bold mt-1">{{ total_users }}</div>
-  </div>
-</div>
-
-<!-- Add Product -->
-<div class="bg-dark-800 border border-white/10 rounded-2xl p-5 mb-8">
-  <h3 class="font-medium mb-4">เพิ่มสินค้าใหม่</h3>
-  <form method="POST" action="{{ url_for('admin_add_product') }}" class="grid sm:grid-cols-2 gap-3">
-    <input type="text" name="name" placeholder="ชื่อสินค้า" required
-           class="bg-dark-700 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
-    <input type="number" name="price" placeholder="ราคา (บาท)" step="0.01" required
-           class="bg-dark-700 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
-    <input type="number" name="stock" placeholder="จำนวนสต็อก" value="10"
-           class="bg-dark-700 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
-    <input type="text" name="category" placeholder="หมวดหมู่ (Game, Windows, Boost...)"
-           class="bg-dark-700 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
-    <textarea name="description" placeholder="รายละเอียดสินค้า" rows="2"
-              class="sm:col-span-2 bg-dark-700 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"></textarea>
-    <button type="submit" class="sm:col-span-2 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-xl text-sm font-medium">
-      เพิ่มสินค้า
-    </button>
-  </form>
-</div>
-
-<!-- Product List -->
-<div class="bg-dark-800 border border-white/10 rounded-2xl p-5 mb-8">
-  <h3 class="font-medium mb-4">รายการสินค้า ({{ products|length }})</h3>
-  <div class="space-y-3 max-h-96 overflow-y-auto">
-    {% for p in products %}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-b border-white/5 last:border-0">
-      <div class="flex-1">
-        <div class="font-medium">{{ p.name }}</div>
-        <div class="text-xs text-gray-400">{{ p.category }} · สต็อก {{ p.stock }} · ขายแล้ว {{ p.sold }} · {{ "%.0f"|format(p.price) }} ฿</div>
-      </div>
-      <div class="flex gap-2">
-        <!-- Edit form (simple) -->
-        <form method="POST" action="{{ url_for('admin_edit_product', id=p.id) }}" class="flex gap-1 items-center">
-          <input type="number" name="stock" value="{{ p.stock }}" class="w-16 bg-dark-700 border border-white/10 rounded-lg px-2 py-1 text-xs">
-          <input type="number" name="price" value="{{ p.price }}" step="0.01" class="w-20 bg-dark-700 border border-white/10 rounded-lg px-2 py-1 text-xs">
-          <input type="hidden" name="name" value="{{ p.name }}">
-          <input type="hidden" name="category" value="{{ p.category }}">
-          <input type="hidden" name="description" value="{{ p.description }}">
-          <button type="submit" class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-lg">บันทึก</button>
-        </form>
-        <form method="POST" action="{{ url_for('admin_delete_product', id=p.id) }}" onsubmit="return confirm('ลบสินค้านี้?')">
-          <button type="submit" class="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-lg">ลบ</button>
-        </form>
-      </div>
-    </div>
-    {% else %}
-    <div class="text-center py-8 text-gray-500 text-sm">ยังไม่มีสินค้า</div>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- Users -->
-<div class="bg-dark-800 border border-white/10 rounded-2xl p-5 mb-8">
-  <h3 class="font-medium mb-4">ผู้ใช้ทั้งหมด</h3>
-  <div class="space-y-3">
-    {% for u in users %}
-    <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-      <div>
-        <div class="font-medium">{{ u.username }} 
-          <span class="text-xs {% if u.role=='ADMIN' %}text-blue-400{% else %}text-gray-400{% endif %}">{{ u.role }}</span>
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+          <div class="text-sm text-gray-400">สินค้า</div>
+          <div class="text-2xl font-bold">{{ total_products }}</div>
         </div>
-        <div class="text-xs text-gray-400">เครดิต: {{ "%.2f"|format(u.credit) }} ฿</div>
+        <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+          <div class="text-sm text-gray-400">ออเดอร์</div>
+          <div class="text-2xl font-bold">{{ total_orders }}</div>
+        </div>
+        <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+          <div class="text-sm text-gray-400">ยอดขายรวม</div>
+          <div class="text-2xl font-bold text-green-400">{{ "%.0f"|format(total_sales) }} ฿</div>
+        </div>
+        <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+          <div class="text-sm text-gray-400">ผู้ใช้</div>
+          <div class="text-2xl font-bold">{{ total_users }}</div>
+        </div>
       </div>
-      <form method="POST" action="{{ url_for('admin_add_credit', id=u.id) }}" class="flex gap-1">
-        <input type="number" name="amount" placeholder="+/-" step="1" class="w-20 bg-dark-700 border border-white/10 rounded-lg px-2 py-1 text-xs">
-        <button type="submit" class="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-lg">ปรับ</button>
-      </form>
-    </div>
-    {% endfor %}
-  </div>
-</div>
 
-<!-- Recent Orders -->
-<div class="bg-dark-800 border border-white/10 rounded-2xl p-5">
-  <h3 class="font-medium mb-4">ออเดอร์ล่าสุด</h3>
-  <div class="space-y-2 max-h-80 overflow-y-auto text-sm">
-    {% for o in orders %}
-    <div class="flex justify-between py-2 border-b border-white/5 last:border-0">
-      <div>
-        <div>{{ o.product_name }}</div>
-        <div class="text-xs text-gray-500">{{ o.user.username }} · {{ o.created_at.strftime('%d/%m %H:%M') }}</div>
+      <!-- Quick Menu Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+        <a href="{{ url_for('admin_products') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">📦</div>
+          <div class="font-medium">จัดการสินค้า</div>
+        </a>
+        <a href="{{ url_for('admin_categories') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">📁</div>
+          <div class="font-medium">จัดการหมวดหมู่</div>
+        </a>
+        <a href="{{ url_for('admin_orders') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">🛒</div>
+          <div class="font-medium">ประวัติการสั่งซื้อ</div>
+        </a>
+        <a href="{{ url_for('admin_users') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">👥</div>
+          <div class="font-medium">จัดการสมาชิก</div>
+        </a>
+        <a href="{{ url_for('admin_topups') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">💳</div>
+          <div class="font-medium">ประวัติการเติมเงิน</div>
+        </a>
+        <a href="{{ url_for('admin_banners') }}" class="bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4 border border-zinc-800 text-center transition">
+          <div class="text-2xl mb-1">🖼️</div>
+          <div class="font-medium">จัดการป้าย</div>
+        </a>
       </div>
-      <div class="text-right">
-        <div class="text-blue-400">{{ "%.0f"|format(o.price) }} ฿</div>
-        <div class="text-xs font-mono text-gray-500">{{ o.license_key }}</div>
+
+      <!-- Add Product Form -->
+      <div class="bg-zinc-900 rounded-xl p-5 border border-zinc-800">
+        <h2 class="text-lg font-semibold mb-4">เพิ่มสินค้าใหม่</h2>
+        <form method="POST" action="{{ url_for('admin_add_product') }}" class="space-y-3">
+          <input type="text" name="name" placeholder="ชื่อสินค้า" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white">
+          <input type="number" name="price" placeholder="ราคา (บาท)" step="0.01" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white">
+          <input type="number" name="stock" placeholder="สต็อก" value="10" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white">
+          <input type="text" name="category" placeholder="หมวดหมู่ (Game, Windows, Boost...)" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white">
+          <textarea name="description" placeholder="รายละเอียด" rows="2" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white"></textarea>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium w-full">เพิ่มสินค้า</button>
+        </form>
       </div>
     </div>
-    {% else %}
-    <div class="text-center py-6 text-gray-500">ยังไม่มีออเดอร์</div>
-    {% endfor %}
   </div>
 </div>
 {% endblock %}

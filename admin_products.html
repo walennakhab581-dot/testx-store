@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}จัดการสินค้า{% endblock %}
+{% block content %}
+<div class="p-4 max-w-4xl mx-auto">
+  <a href="{{ url_for('admin') }}" class="text-blue-400 text-sm">← กลับแดชบอร์ด</a>
+  <h1 class="text-xl font-bold mt-2 mb-4">จัดการสินค้า ({{ products|length }} รายการ)</h1>
+  <div class="space-y-3">
+    {% for p in products %}
+    <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800 flex justify-between items-center">
+      <div>
+        <div class="font-medium">{{ p.name }}</div>
+        <div class="text-sm text-gray-400">{{ p.price }} ฿ • สต็อก {{ p.stock }} • {{ p.category }}</div>
+      </div>
+      <form method="POST" action="{{ url_for('admin_delete_product', pid=p.id) }}">
+        <button class="text-red-400 text-sm">ลบ</button>
+      </form>
+    </div>
+    {% else %}
+    <p class="text-gray-500">ยังไม่มีสินค้า</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

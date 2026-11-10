@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}จัดการสมาชิก{% endblock %}
+{% block content %}
+<div class="p-4 max-w-4xl mx-auto">
+  <a href="{{ url_for('admin') }}" class="text-blue-400 text-sm">← กลับแดชบอร์ด</a>
+  <h1 class="text-xl font-bold mt-2 mb-4">จัดการสมาชิก</h1>
+  {% for u in users %}
+  <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800 mb-2 flex justify-between">
+    <div>{{ u.username }} <span class="text-xs text-blue-400">{{ u.role }}</span></div>
+    <div class="text-green-400">{{ "%.2f"|format(u.credit) }} ฿</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
