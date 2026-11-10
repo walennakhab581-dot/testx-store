@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import secrets
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 # ใช้ path ที่เขียนได้บน Railway
 db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'testx.db')
